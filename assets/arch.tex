@@ -1,0 +1,73 @@
+\documentclass{standalone}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, backgrounds}
+
+\begin{document}
+
+\tikzset{
+    block/.style={
+        rectangle,
+        minimum width=2.5cm,
+        minimum height=1.2cm,
+        draw=black,
+        fill=blue!10,
+        align=center
+    },
+    attention/.style={
+        rectangle,
+        minimum width=2.5cm,
+        minimum height=1.2cm,
+        draw=black,
+        fill=red!10,
+        align=center
+    },
+    norm/.style={
+        rectangle,
+        minimum width=1.5cm,
+        minimum height=1.2cm,
+        draw=black,
+        fill=green!10,
+        align=center
+    },
+    arrow/.style={
+        -{Stealth[length=3mm]},
+        thick
+    }
+}
+
+\begin{tikzpicture}[node distance=2cm]
+    % Input
+    \node[block] (input) {Input\\200,000 SNPs};
+    
+    % Dense 1
+    \node[block, right=of input] (dense1) {Dense (256)\\ReLU\\Dropout (0.3)};
+    
+    % Attention
+    \node[attention, right=of dense1] (attention) {Multi-Head\\Attention\\(4 heads)};
+    
+    % Layer Norm
+    \node[norm, right=of attention] (norm) {Layer\\Norm};
+    
+    % Dense 2
+    \node[block, right=of norm] (dense2) {Dense (128)\\ReLU\\Dropout (0.3)};
+    
+    % Output
+    \node[block, right=of dense2] (output) {Output\\5 classes};
+    
+    % Connections
+    \draw[arrow] (input) -- (dense1);
+    \draw[arrow] (dense1) -- (attention);
+    \draw[arrow] (attention) -- (norm);
+    \draw[arrow] (norm) -- (dense2);
+    \draw[arrow] (dense2) -- (output);
+    
+    % Add a background box behind the attention block
+    \begin{scope}[on background layer]
+        \node[rectangle,
+              fill=red!5,
+              fit=(attention),
+              inner sep=12pt] {};
+    \end{scope}
+\end{tikzpicture}
+
+\end{document}
